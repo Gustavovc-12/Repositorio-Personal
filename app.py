@@ -1,14 +1,18 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
 # -------------------------------
-# RUTA DE PRUEBA (PING)
+# PÁGINA WEB PRINCIPAL
 # -------------------------------
 @app.route("/")
 def home():
-    return "Servidor activo 🚀"
+    return render_template("index.html")
 
+
+# -------------------------------
+# RUTA DE PRUEBA (PING)
+# -------------------------------
 @app.route("/ping", methods=["GET"])
 def ping():
     return jsonify({
@@ -46,7 +50,7 @@ def control_servo():
 
 
 # -------------------------------
-# DATOS DE BATERÍA / ENERGÍA
+# DATOS DE BATERÍA
 # -------------------------------
 @app.route("/battery", methods=["GET"])
 def battery():
@@ -59,7 +63,7 @@ def battery():
 
 
 # -------------------------------
-# GRÁFICOS (DATOS SIMULADOS)
+# DATOS PARA GRÁFICOS
 # -------------------------------
 @app.route("/graphs", methods=["GET"])
 def graphs():
@@ -70,7 +74,7 @@ def graphs():
 
 
 # -------------------------------
-# ARRANQUE DEL SERVIDOR (RENDER)
+# ARRANQUE DEL SERVIDOR
 # -------------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
