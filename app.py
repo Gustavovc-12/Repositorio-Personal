@@ -16,7 +16,7 @@ def index():
 # ====== APP → SERVIDOR ======
 @app.route("/servo", methods=["POST"])
 def set_servo():
-    data = request.json
+    data = request.get_json(force=True, silent=True)
     if not data or "pos" not in data:
         return jsonify({"error": "missing pos"}), 400
 
