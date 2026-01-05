@@ -14,13 +14,18 @@ def index():
     return render_template("index.html")
 
 # ====== APP → SERVIDOR ======
+# Espera: pos=123 (form-urlencoded)
 @app.route("/servo", methods=["POST"])
 def set_servo():
-    data = request.get_json(force=True, silent=True)
-    if not data or "pos" not in data:
+    # MIT App Inventor envía datos como FORM, no JSON
+    if "pos" not in request.form:
         return jsonify({"error": "missing pos"}), 400
 
-    servo_state["pos"] = int(data["pos"])
+    try:
+        servo_state["pos"] = int(request.form["pos"])
+    except ValueError:
+        return jsonify({"error": "invalid pos"}), 400
+
     servo_state["last_update"] = "app"
 
     return jsonify({
@@ -35,4 +40,5 @@ def get_servo():
 
 # ====== RENDER ======
 if __name__ == "__main__":
+    # Render usa el puerto 10000
     app.run(host="0.0.0.0", port=10000)
