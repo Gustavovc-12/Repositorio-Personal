@@ -42,3 +42,32 @@ def get_servo():
 if __name__ == "__main__":
     # Render usa el puerto 10000
     app.run(host="0.0.0.0", port=10000)
+# ====== ESP32 → SERVIDOR (BATERIA) ======
+# Espera JSON
+@app.route("/esp32/battery", methods=["POST"])
+def set_battery():
+
+    if not request.is_json:
+        return jsonify({"error": "expected JSON"}), 400
+
+    data = request.get_json()
+
+    try:
+        battery_state["percentage"] = int(data["percentage"])
+        battery_state["voltage"] = float(data["voltage"])
+        battery_state["time_real_h"] = float(data["time_real_h"])
+        battery_state["time_remaining_h"] = float(data["time_remaining_h"])
+        battery_state["efficiency"] = float(data["efficiency"])
+    except (KeyError, ValueError, TypeError):
+        return jsonify({"error": "invalid battery data"}), 400
+
+    battery_state["last_update"] = "esp32"
+
+    return jsonify({
+        "ok": True,
+        "battery": battery_state
+    })
+# ====== LEER ESTADO DE BATERIA ======
+@app.route("/battery/state", methods=["GET"])
+def get_battery():
+    return jsonify(battery_state)
