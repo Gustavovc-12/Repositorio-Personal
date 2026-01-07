@@ -7,6 +7,7 @@ servo_state = {
     "pos": 90,
     "last_update": "nunca"
 }
+
 battery_state = {
     "percentage": None,
     "voltage": None,
@@ -21,11 +22,11 @@ battery_state = {
 def index():
     return render_template("index.html")
 
-# ====== APP → SERVIDOR ======
+# ====== APP → SERVIDOR (SERVO) ======
 # Espera: pos=123 (form-urlencoded)
 @app.route("/servo", methods=["POST"])
 def set_servo():
-    # MIT App Inventor envía datos como FORM, no JSON
+
     if "pos" not in request.form:
         return jsonify({"error": "missing pos"}), 400
 
@@ -41,17 +42,12 @@ def set_servo():
         "pos": servo_state["pos"]
     })
 
-# ====== ESP32 / WEB → LEER ESTADO ======
+# ====== ESP32 / WEB → LEER SERVO ======
 @app.route("/servo/state", methods=["GET"])
 def get_servo():
     return jsonify(servo_state)
 
-# ====== RENDER ======
-if __name__ == "__main__":
-    # Render usa el puerto 10000
-    app.run(host="0.0.0.0", port=10000)
 # ====== ESP32 → SERVIDOR (BATERIA) ======
-# Espera JSON
 @app.route("/esp32/battery", methods=["POST"])
 def set_battery():
 
@@ -75,7 +71,12 @@ def set_battery():
         "ok": True,
         "battery": battery_state
     })
+
 # ====== LEER ESTADO DE BATERIA ======
 @app.route("/battery/state", methods=["GET"])
 def get_battery():
     return jsonify(battery_state)
+
+# ====== RENDER ======
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
