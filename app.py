@@ -7,6 +7,14 @@ servo_state = {
     "pos": 90,
     "last_update": "nunca"
 }
+battery_state = {
+    "percentage": None,
+    "voltage": None,
+    "time_real_h": None,
+    "time_remaining_h": None,
+    "efficiency": None,
+    "last_update": "nunca"
+}
 
 # ====== WEB ======
 @app.route("/")
