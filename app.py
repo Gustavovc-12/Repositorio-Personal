@@ -59,7 +59,7 @@ def set_battery():
     try:
         battery_state["percentage"] = int(data["percentage"])
         battery_state["voltage"] = float(data["voltage"])
-        battery_state["time_real_h"] = float(data["time_real_h"])
+        battery_state["time_real_1pct_h"] = float(data["time_real_1pct_h"])
         battery_state["time_remaining_h"] = float(data["time_remaining_h"])
         battery_state["efficiency"] = float(data["efficiency"])
     except (KeyError, ValueError, TypeError):
