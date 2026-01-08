@@ -104,3 +104,49 @@ footer {
         max-width: 380px;
     }
 }
+/* ===== LED SERVIDOR ===== */
+.led {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.led.green {
+    background-color: #22c55e;
+}
+
+.led.red {
+    background-color: #ef4444;
+}
+
+/* ===== BATERÍA ===== */
+.battery-bar {
+    width: 100%;
+    height: 14px;
+    background-color: #334155;
+    border-radius: 8px;
+    margin: 10px 0 12px 0;
+    overflow: hidden;
+}
+
+.battery-level {
+    height: 100%;
+}
+
+.battery-level.ok {
+    background-color: #22c55e;
+}
+
+.battery-level.low {
+    background-color: #ef4444;
+}
+
+/* ===== ALERTA ===== */
+.warning {
+    margin-top: 8px;
+    font-size: 0.9em;
+    color: #fca5a5;
+    font-weight: 600;
+}

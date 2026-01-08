@@ -21,8 +21,11 @@ servo_state = {
 battery_state = {
     "percentage": None,
     "voltage": None,
+    "low": False,
     "last_update": "nunca"
 }
+
+BATTERY_LOW_THRESHOLD = 20  # %
 
 # ========= WEB =========
 @app.route("/")
@@ -56,15 +59,20 @@ def set_battery():
         return jsonify({"error": "expected JSON"}), 400
 
     try:
-        battery_state["percentage"] = int(data["percentage"])
-        battery_state["voltage"] = float(data["voltage"])
+        percentage = int(data["percentage"])
+        voltage = float(data["voltage"])
+
+        battery_state["percentage"] = percentage
+        battery_state["voltage"] = voltage
+        battery_state["low"] = percentage < BATTERY_LOW_THRESHOLD
         battery_state["last_update"] = f"esp32 @ {now()}"
+
     except (KeyError, ValueError, TypeError):
         return jsonify({"error": "invalid battery data"}), 400
 
     return jsonify({"ok": True})
 
-# ========= ESTADO GLOBAL (PING + TODO) =========
+# ========= ESTADO GLOBAL =========
 @app.route("/status", methods=["GET"])
 def status():
     return jsonify({
@@ -76,6 +84,6 @@ def status():
         "battery": battery_state
     })
 
-# ========= RENDER =========
+# ========= RUN =========
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)

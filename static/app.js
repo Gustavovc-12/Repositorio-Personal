@@ -3,15 +3,30 @@ async function cargarEstado() {
         const res = await fetch("/status");
         const data = await res.json();
 
+        renderServidor(data.server);
         renderServo(data.servo);
         renderBateria(data.battery);
-        renderServidor(data.server);
 
     } catch (e) {
+        document.getElementById("server").innerText = "❌ Sin conexión";
         document.getElementById("servo").innerText = "❌ Sin conexión";
         document.getElementById("battery").innerText = "❌ Sin conexión";
-        document.getElementById("server").innerText = "❌ Servidor caído";
     }
+}
+
+/* ========= SERVIDOR ========= */
+function renderServidor(d) {
+    const estado = d.alive ? "Online" : "Offline";
+    const color = d.alive ? "green" : "red";
+
+    document.getElementById("server").innerHTML = `
+        <h2>🌐 Servidor</h2>
+        <p>
+            <span class="led ${color}"></span>
+            <b>Estado:</b> ${estado}
+        </p>
+        <p><b>Hora:</b> ${d.time}</p>
+    `;
 }
 
 /* ========= SERVO ========= */
@@ -33,7 +48,7 @@ function renderServo(d) {
         <p><b>Grupo:</b> ${d.group}</p>
         <p><b>Modo:</b> ${d.mode}</p>
         ${extra}
-        <p class="muted">Última actualización: ${d.last_update}</p>
+        <p class="muted">Actualizado: ${d.last_update}</p>
     `;
 }
 
@@ -47,20 +62,22 @@ function renderBateria(d) {
         return;
     }
 
+    const porcentaje = Math.max(0, Math.min(100, d.percentage));
+    const nivel = d.low ? "low" : "ok";
+
     document.getElementById("battery").innerHTML = `
         <h2>🔋 Batería</h2>
-        <p><b>Carga:</b> ${d.percentage}%</p>
-        <p><b>Voltaje:</b> ${d.voltage.toFixed(2)} V</p>
-        <p class="muted">Última actualización: ${d.last_update}</p>
-    `;
-}
 
-/* ========= SERVIDOR ========= */
-function renderServidor(d) {
-    document.getElementById("server").innerHTML = `
-        <h2>🌐 Servidor</h2>
-        <p><b>Estado:</b> ${d.alive ? "🟢 Online" : "🔴 Offline"}</p>
-        <p><b>Hora:</b> ${d.time}</p>
+        <div class="battery-bar">
+            <div class="battery-level ${nivel}" style="width: ${porcentaje}%"></div>
+        </div>
+
+        <p><b>Carga:</b> ${porcentaje}%</p>
+        <p><b>Voltaje:</b> ${d.voltage.toFixed(2)} V</p>
+
+        ${d.low ? `<p class="warning">⚠️ Batería baja</p>` : ""}
+
+        <p class="muted">Actualizado: ${d.last_update}</p>
     `;
 }
 
