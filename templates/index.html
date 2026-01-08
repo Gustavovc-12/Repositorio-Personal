@@ -1,20 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel ESP32</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 <body>
 
-  <h1>Panel de Control ESP32</h1>
+<h1>Panel de Control ESP32</h1>
 
-  <div class="dashboard">
+<div class="dashboard">
 
     <section class="card servo-card" id="servo">
-      <h2>Servomotores</h2>
-      <p>Cargando estado...</p>
+        <h2>Servomotores</h2>
+        <p>Cargando estado...</p>
     </section>
 
     <section class="card battery-card" id="battery">
-      <h2>Batería</h2>
-      <p>Cargando estado...</p>
+        <h2>Batería</h2>
+        <p>Cargando estado...</p>
     </section>
 
-  </div>
+</div>
 
-  <script src="/static/app.js"></script>
+<!-- JS -->
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+
 </body>
+</html>
