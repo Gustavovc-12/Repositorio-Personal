@@ -2,77 +2,74 @@ from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
 
-APP_TOKEN = "APP_TOKEN_ABC123"
-DEVICE_TOKEN = "ESP32_TOKEN_ABC123"
-
+# ========= ESTADO SERVO =========
 servo_state = {
-    "group": "arm",
-    "mode": "manual",
-    "pos": 0,
-    "max_pos": 90,
-    "periodic": False,
-    "duration_s": 0,
+    "group": "arm",          # arm | hand
+    "mode": "manual",        # manual | auto
+    "pos": 90,               # manual
+    "max_pos": 120,          # auto
+    "periodic": False,       # auto
+    "duration_s": 0,         # auto
     "last_update": "nunca"
 }
 
+# ========= ESTADO BATERÍA =========
 battery_state = {
     "percentage": None,
     "voltage": None,
     "last_update": "nunca"
 }
 
-def check_app_token(req):
-    return req.headers.get("Authorization") == f"Bearer {APP_TOKEN}"
-
-def check_device_token(req):
-    return req.headers.get("X-Device-Token") == DEVICE_TOKEN
-
+# ========= WEB =========
 @app.route("/")
 def index():
     return render_template("index.html")
 
+# ========= APP → SERVIDOR =========
 @app.route("/servo", methods=["POST"])
 def set_servo():
-    if not check_app_token(request):
-        return jsonify({"error": "unauthorized"}), 401
-
-    data = request.get_json()
-    if not data:
+    if not request.is_json:
         return jsonify({"error": "expected JSON"}), 400
 
-    servo_state.update({
-        "group": data["group"],
-        "mode": data["mode"],
-        "pos": int(data.get("pos", 0)),
-        "max_pos": int(data.get("max_pos", 90)),
-        "periodic": bool(data.get("periodic", False)),
-        "duration_s": int(data.get("duration_s", 0)),
-        "last_update": "app"
-    })
+    data = request.get_json()
 
-    return jsonify({"ok": True})
+    servo_state["group"] = data.get("group", servo_state["group"])
+    servo_state["mode"] = data.get("mode", servo_state["mode"])
+    servo_state["pos"] = int(data.get("pos", servo_state["pos"]))
+    servo_state["max_pos"] = int(data.get("max_pos", servo_state["max_pos"]))
+    servo_state["periodic"] = bool(data.get("periodic", servo_state["periodic"]))
+    servo_state["duration_s"] = int(data.get("duration_s", servo_state["duration_s"]))
+    servo_state["last_update"] = "app"
 
-@app.route("/servo/state")
+    return jsonify({"ok": True, "state": servo_state})
+
+# ========= ESP32 / WEB =========
+@app.route("/servo/state", methods=["GET"])
 def get_servo():
-    if not check_device_token(request):
-        return jsonify({"error": "unauthorized"}), 401
     return jsonify(servo_state)
 
+# ========= ESP32 → SERVIDOR =========
 @app.route("/esp32/battery", methods=["POST"])
 def set_battery():
-    if not check_device_token(request):
-        return jsonify({"error": "unauthorized"}), 401
+    if not request.is_json:
+        return jsonify({"error": "expected JSON"}), 400
 
     data = request.get_json()
-    battery_state["percentage"] = int(data["percentage"])
-    battery_state["voltage"] = float(data["voltage"])
-    battery_state["last_update"] = "esp32"
+
+    try:
+        battery_state["percentage"] = int(data["percentage"])
+        battery_state["voltage"] = float(data["voltage"])
+        battery_state["last_update"] = "esp32"
+    except (KeyError, ValueError, TypeError):
+        return jsonify({"error": "invalid battery data"}), 400
 
     return jsonify({"ok": True})
 
-@app.route("/battery/state")
+# ========= WEB =========
+@app.route("/battery/state", methods=["GET"])
 def get_battery():
     return jsonify(battery_state)
 
+# ========= RENDER =========
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)

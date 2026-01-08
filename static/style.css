@@ -1,42 +1,50 @@
 body {
-    background-color: #0b1220;
+    background-color: #0f172a;
     color: #e5e7eb;
-    font-family: system-ui, sans-serif;
-    margin: 0;
-    padding: 24px;
+    font-family: system-ui, Arial, sans-serif;
+    padding: 30px;
 }
 
 h1 {
     text-align: center;
     margin-bottom: 40px;
-    font-size: 1.9rem;
-    color: #f8fafc;
+    color: #e2e8f0;
 }
 
 .dashboard {
     display: flex;
-    flex-direction: column;
-    gap: 28px;
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
 }
 
 .card {
-    background: linear-gradient(180deg, #0f1e3a, #0b1a33);
-    border-radius: 16px;
-    padding: 24px;
-    width: 100%;
-    max-width: 520px;
-    box-shadow: 0 12px 35px rgba(0,0,0,0.6);
-    border: 1px solid #1e3a8a;
+    background-color: #1e293b;
+    padding: 20px 25px;
+    border-radius: 14px;
+    width: 320px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
 }
 
-.card h2 {
+.servo-card {
+    border-left: 5px solid #38bdf8;
+}
+
+.battery-card {
+    border-left: 5px solid #22c55e;
+}
+
+h2 {
     margin-top: 0;
-    font-size: 1.3rem;
-    color: #93c5fd;
+    margin-bottom: 15px;
 }
 
-.card p {
+p {
     margin: 6px 0;
-    font-size: 0.95rem;
+}
+
+.muted {
+    margin-top: 12px;
+    font-size: 0.85em;
+    color: #94a3b8;
 }
