@@ -10,17 +10,30 @@
 </head>
 <body>
 
-<h1>📡 Panel de Control ESP32</h1>
+<header>
+    <h1>📡 Panel de Control ESP32</h1>
+    <p class="subtitle">Estado del sistema en tiempo real</p>
+</header>
 
-<div class="dashboard">
+<main class="dashboard">
 
-    <section class="card servo-card">
-        <div id="servo">
-            <h2>🤖 Servomotores</h2>
+    <!-- SERVIDOR / CONEXIÓN -->
+    <section class="card server-card">
+        <div id="server">
+            <h2>🌐 Servidor</h2>
             <p>Cargando estado...</p>
         </div>
     </section>
 
+    <!-- SERVO -->
+    <section class="card servo-card">
+        <div id="servo">
+            <h2>🦾 Servo</h2>
+            <p>Cargando estado...</p>
+        </div>
+    </section>
+
+    <!-- BATERÍA -->
     <section class="card battery-card">
         <div id="battery">
             <h2>🔋 Batería</h2>
@@ -28,7 +41,11 @@
         </div>
     </section>
 
-</div>
+</main>
+
+<footer>
+    <p>ESP32 · Flask · MIT App Inventor</p>
+</footer>
 
 <!-- JS -->
 <script src="{{ url_for('static', filename='app.js') }}"></script>

@@ -1,15 +1,19 @@
 from flask import Flask, request, jsonify, render_template
+from datetime import datetime
 
 app = Flask(__name__)
+
+def now():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 # ========= ESTADO SERVO =========
 servo_state = {
     "group": "arm",          # arm | hand
     "mode": "manual",        # manual | auto
-    "pos": 90,               # manual
-    "max_pos": 120,          # auto
-    "periodic": False,       # auto
-    "duration_s": 0,         # auto
+    "pos": 90,
+    "max_pos": 120,
+    "periodic": False,
+    "duration_s": 0,
     "last_update": "nunca"
 }
 
@@ -25,13 +29,13 @@ battery_state = {
 def index():
     return render_template("index.html")
 
-# ========= APP → SERVIDOR =========
+# ========= APP → SERVIDOR (SERVO) =========
 @app.route("/servo", methods=["POST"])
 def set_servo():
-    if not request.is_json:
-        return jsonify({"error": "expected JSON"}), 400
+    data = request.get_json(silent=True)
 
-    data = request.get_json()
+    if not data:
+        return jsonify({"error": "expected JSON"}), 400
 
     servo_state["group"] = data.get("group", servo_state["group"])
     servo_state["mode"] = data.get("mode", servo_state["mode"])
@@ -39,36 +43,38 @@ def set_servo():
     servo_state["max_pos"] = int(data.get("max_pos", servo_state["max_pos"]))
     servo_state["periodic"] = bool(data.get("periodic", servo_state["periodic"]))
     servo_state["duration_s"] = int(data.get("duration_s", servo_state["duration_s"]))
-    servo_state["last_update"] = "app"
+    servo_state["last_update"] = f"app @ {now()}"
 
-    return jsonify({"ok": True, "state": servo_state})
+    return jsonify({"ok": True})
 
-# ========= ESP32 / WEB =========
-@app.route("/servo/state", methods=["GET"])
-def get_servo():
-    return jsonify(servo_state)
-
-# ========= ESP32 → SERVIDOR =========
+# ========= ESP32 → SERVIDOR (BATERÍA) =========
 @app.route("/esp32/battery", methods=["POST"])
 def set_battery():
-    if not request.is_json:
-        return jsonify({"error": "expected JSON"}), 400
+    data = request.get_json(silent=True)
 
-    data = request.get_json()
+    if not data:
+        return jsonify({"error": "expected JSON"}), 400
 
     try:
         battery_state["percentage"] = int(data["percentage"])
         battery_state["voltage"] = float(data["voltage"])
-        battery_state["last_update"] = "esp32"
+        battery_state["last_update"] = f"esp32 @ {now()}"
     except (KeyError, ValueError, TypeError):
         return jsonify({"error": "invalid battery data"}), 400
 
     return jsonify({"ok": True})
 
-# ========= WEB =========
-@app.route("/battery/state", methods=["GET"])
-def get_battery():
-    return jsonify(battery_state)
+# ========= ESTADO GLOBAL (PING + TODO) =========
+@app.route("/status", methods=["GET"])
+def status():
+    return jsonify({
+        "server": {
+            "alive": True,
+            "time": now()
+        },
+        "servo": servo_state,
+        "battery": battery_state
+    })
 
 # ========= RENDER =========
 if __name__ == "__main__":
