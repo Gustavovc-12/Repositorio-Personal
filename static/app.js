@@ -4,12 +4,28 @@ async function cargarServo() {
         const data = await res.json();
 
         document.getElementById("servo").innerHTML = `
-            <h2>Servo</h2>
-            <p>Posición objetivo: <b>${data.pos}°</b></p>
-            <p>Última actualización: ${data.last_update}</p>
+            <h2>Control de Servomotores</h2>
+
+            <p><b>Grupo activo:</b> ${data.group}</p>
+            <p><b>Modo:</b> ${data.mode}</p>
+
+            <p><b>Posición actual:</b> ${data.pos}°</p>
+
+            ${
+                data.mode === "auto"
+                ? `
+                    <p><b>Posición máxima:</b> ${data.max_pos}°</p>
+                    <p><b>Movimiento periódico:</b> ${data.periodic ? "Sí" : "No"}</p>
+                    <p><b>Duración:</b> ${data.duration_s} s</p>
+                  `
+                : ""
+            }
+
+            <p><b>Última actualización:</b> ${data.last_update}</p>
         `;
     } catch (e) {
-        document.getElementById("servo").innerText = "Error de conexión";
+        document.getElementById("servo").innerHTML =
+            "<h2>Control de Servomotores</h2><p>Error de conexión</p>";
     }
 }
 
@@ -20,22 +36,22 @@ async function cargarBateria() {
 
         if (data.percentage === null) {
             document.getElementById("battery").innerHTML = `
-                <h2>🔋 Batería</h2>
-                <p>Sin datos aún</p>
+                <h2>Estado de Batería</h2>
+                <p>Sin datos disponibles</p>
             `;
             return;
         }
 
         document.getElementById("battery").innerHTML = `
-            <h2>🔋 Batería</h2>
-            <p>Carga: <b>${data.percentage}%</b></p>
-            <p>Voltaje: ${data.voltage.toFixed(2)} V</p>
-            <p>Tiempo restante: ${data.time_remaining_h.toFixed(2)} h</p>
-            <p>Eficiencia: ${(data.efficiency * 100).toFixed(1)} %</p>
-            <p>Última actualización: ${data.last_update}</p>
+            <h2>Estado de Batería</h2>
+
+            <p><b>Carga:</b> ${data.percentage}%</p>
+            <p><b>Voltaje:</b> ${data.voltage.toFixed(2)} V</p>
+            <p><b>Última actualización:</b> ${data.last_update}</p>
         `;
     } catch (e) {
-        document.getElementById("battery").innerText = "Error de conexión";
+        document.getElementById("battery").innerHTML =
+            "<h2>Estado de Batería</h2><p>Error de conexión</p>";
     }
 }
 
@@ -44,6 +60,6 @@ function cargarEstado() {
     cargarBateria();
 }
 
-// refresco
+// Refresco automático
 setInterval(cargarEstado, 1000);
 cargarEstado();
