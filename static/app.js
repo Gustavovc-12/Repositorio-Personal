@@ -1,3 +1,5 @@
+console.log("APP.JS CARGADO");
+
 async function cargarEstado() {
     try {
         const res = await fetch(window.location.origin + "/status");
