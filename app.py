@@ -34,25 +34,30 @@ def index():
 def set_servo():
 
     data = request.get_json(silent=True)
+
+    # 👉 SI NO ES JSON, LEER FORM DATA
+    if data is None:
+        data = request.form.to_dict()
+
     if not data:
-        return jsonify({"error": "JSON requerido"}), 400
+        return jsonify({"error": "no data received"}), 400
 
     servo_state["group"] = data.get("group", servo_state["group"])
     servo_state["mode"] = data.get("mode", servo_state["mode"])
 
-    # ---- MANUAL ----
+    # -------- MANUAL --------
     if servo_state["mode"] == "manual":
         servo_state["command"] = data.get("command", "stop")
 
-    # ---- AUTO ----
+    # -------- AUTO --------
     if servo_state["mode"] == "auto":
         servo_state["max_pos"] = int(data.get("max_pos", servo_state["max_pos"]))
-        servo_state["periodic"] = bool(data.get("periodic", servo_state["periodic"]))
+        servo_state["periodic"] = str(data.get("periodic", "false")).lower() == "true"
         servo_state["duration_s"] = int(data.get("duration_s", servo_state["duration_s"]))
 
     servo_state["last_update"] = f"app @ {now()}"
 
-    return jsonify({"ok": True})
+    return jsonify({"ok": True, "received": data})
 
 # ================= ESP32 → SERVO =================
 @app.route("/servo/state", methods=["GET"])
