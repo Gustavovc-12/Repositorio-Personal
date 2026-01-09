@@ -1,6 +1,6 @@
 async function cargarEstado() {
     try {
-        const res = await fetch("/status");
+        const res = await fetch(window.location.origin + "/status");
         const data = await res.json();
 
         // -------- SERVO --------
