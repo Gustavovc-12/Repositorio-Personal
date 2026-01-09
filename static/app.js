@@ -2,8 +2,12 @@ console.log("APP.JS CARGADO");
 
 async function cargarEstado() {
     try {
+        console.log("ANTES DEL FETCH");
         const res = await fetch(window.location.origin + "/status");
+        console.log("DESPUÉS DEL FETCH", res.status);
+
         const data = await res.json();
+        console.log("DATA:", data);
 
         // -------- SERVO --------
         const s = data.servo;
