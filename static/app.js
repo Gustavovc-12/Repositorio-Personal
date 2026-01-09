@@ -7,6 +7,16 @@ async function cargarEstado() {
         console.log("DESPUÉS DEL FETCH", res.status);
 
         const data = await res.json();
+
+        // -------- SERVIDOR --------
+        const srv = data.server;
+ 
+        document.getElementById("server").innerHTML = `
+        <h2>🌐 Servidor</h2>
+        <p><b>Estado:</b> ${srv.alive ? "Conectado" : "Caído"}</p>
+        <p><b>Hora:</b> ${srv.time}</p>
+        `;
+
         console.log("DATA:", data);
 
         // -------- SERVO --------
